@@ -1,0 +1,364 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{font-family:var(--font-sans);color:var(--color-text-primary);padding:1.5rem}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem}
+.brand-name{font-size:22px;font-weight:500;letter-spacing:-0.5px}
+.brand-dot{width:8px;height:8px;background:#1D9E75;border-radius:2px;display:inline-block;margin-left:2px}
+.brand-tag{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:3px 10px;border-radius:20px;border:0.5px solid var(--color-border-tertiary)}
+.mode-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1.5rem}
+.mode-btn{font-family:var(--font-sans);font-size:13px;font-weight:400;padding:10px 6px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s;text-align:center;line-height:1.3}
+.mode-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.mode-btn.on{background:#E1F5EE;color:#085041;border-color:#5DCAA5;font-weight:500}
+.mode-icon{display:block;font-size:18px;margin-bottom:4px}
+.pane{display:none}
+.pane.on{display:block}
+.converter-box{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.dpi-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.dpi-label{font-size:12px;color:var(--color-text-secondary);white-space:nowrap}
+.dpi-chip{font-family:var(--font-sans);font-size:12px;padding:5px 12px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:none;color:var(--color-text-secondary);cursor:pointer;transition:all .12s}
+.dpi-chip:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.dpi-chip.on{background:#1D9E75;color:#E1F5EE;border-color:#1D9E75}
+.convert-area{display:grid;grid-template-columns:1fr 44px 1fr;gap:8px;align-items:center;margin-bottom:1rem}
+.field-wrap{display:flex;flex-direction:column;gap:6px}
+.field-lbl{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em}
+.field-input{font-family:var(--font-mono);font-size:18px;font-weight:500;width:100%;padding:12px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);outline:none;transition:border-color .15s}
+.field-input:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+.arr-btn{width:44px;height:44px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:#1D9E75;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:flex-end;transition:all .15s;margin-bottom:0}
+.arr-btn:hover{background:#E1F5EE;border-color:#5DCAA5}
+.result-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:4px}
+.result-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center}
+.result-card.hero{background:#E1F5EE;border:0.5px solid #9FE1CB}
+.rc-val{font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.hero .rc-val{color:#085041}
+.rc-unit{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.hero .rc-unit{color:#0F6E56}
+.rc-lbl{font-size:10px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.note-bar{font-size:12px;color:var(--color-text-secondary);padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-top:8px;border-left:2px solid #1D9E75;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.section-lbl{font-size:11px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:500}
+.quick-table{width:100%;border-collapse:collapse;font-size:13px}
+.quick-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-secondary);padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.quick-table td{padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+.quick-table td:not(:first-child){font-family:var(--font-mono);font-size:12px}
+.quick-table td:first-child{color:var(--color-text-secondary);font-size:12px}
+.quick-table tr:last-child td{border-bottom:none}
+.quick-table tr.hl td{color:#0F6E56;font-weight:500}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px}
+.all-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:8px}
+.em-note{font-size:12px;color:var(--color-text-secondary);margin-top:8px}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden">rawpixels — pixel unit converter for inches, centimeters, millimeters, points, em, and resolution</h2>
+
+<div class="app">
+  <div class="brand">
+    <span class="brand-name">rawpixels<span class="brand-dot"></span></span>
+    <span class="brand-tag">pixel converter</span>
+  </div>
+
+  <div class="mode-bar">
+    <button class="mode-btn on" onclick="setMode('length')">
+      <span class="mode-icon">&#8596;</span>Length units
+    </button>
+    <button class="mode-btn" onclick="setMode('typo')">
+      <span class="mode-icon">&#65332;</span>Typography
+    </button>
+    <button class="mode-btn" onclick="setMode('res')">
+      <span class="mode-icon">&#9974;</span>Resolution
+    </button>
+    <button class="mode-btn" onclick="setMode('all')">
+      <span class="mode-icon">&#9733;</span>All at once
+    </button>
+  </div>
+
+  <!-- LENGTH MODE -->
+  <div class="pane on" id="pane-length">
+    <div class="converter-box">
+      <div class="dpi-row">
+        <span class="dpi-lbl dpi-label">DPI:</span>
+        <button class="dpi-chip" onclick="setDPI(72)">72 — web low</button>
+        <button class="dpi-chip on" onclick="setDPI(96)">96 — screen</button>
+        <button class="dpi-chip" onclick="setDPI(150)">150 — print mid</button>
+        <button class="dpi-chip" onclick="setDPI(300)">300 — print hi</button>
+        <input id="dpi-custom" type="number" min="1" value="96" oninput="customDPI()" style="width:64px;font-size:13px;padding:4px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);outline:none">
+      </div>
+
+      <div class="convert-area">
+        <div class="field-wrap">
+          <span class="field-lbl">Pixels (px)</span>
+          <input class="field-input" id="px-in" type="number" value="96" min="0" oninput="fromPX()">
+        </div>
+        <button class="arr-btn" onclick="swapLen()">&#8646;</button>
+        <div class="field-wrap">
+          <select id="unit-sel" onchange="fromPX()" style="font-family:var(--font-sans);font-size:13px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);outline:none;margin-bottom:4px">
+            <option value="in">Inches (in)</option>
+            <option value="cm">Centimeters (cm)</option>
+            <option value="mm">Millimeters (mm)</option>
+          </select>
+          <input class="field-input" id="unit-out" type="number" min="0" oninput="fromUnit()">
+        </div>
+      </div>
+
+      <div class="result-strip" id="len-strip"></div>
+      <div class="note-bar" id="len-note"></div>
+    </div>
+
+    <div class="converter-box">
+      <div class="section-lbl">Quick reference</div>
+      <table class="quick-table" id="len-table"></table>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY MODE -->
+  <div class="pane" id="pane-typo">
+    <div class="converter-box">
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="field-wrap">
+          <span class="field-lbl">Pixels (px)</span>
+          <input class="field-input" id="t-px" type="number" value="16" min="0" oninput="fromTPX()">
+        </div>
+        <div class="field-wrap">
+          <span class="field-lbl">Base font size (px)</span>
+          <input class="field-input" id="t-base" type="number" value="16" min="1" oninput="fromTPX()">
+        </div>
+      </div>
+
+      <div class="dpi-row" style="margin-bottom:0">
+        <span class="dpi-label">Base:</span>
+        <button class="dpi-chip" onclick="setBase(12)">12px</button>
+        <button class="dpi-chip" onclick="setBase(14)">14px</button>
+        <button class="dpi-chip on" onclick="setBase(16)">16px</button>
+        <button class="dpi-chip" onclick="setBase(18)">18px</button>
+        <button class="dpi-chip" onclick="setBase(20)">20px</button>
+      </div>
+    </div>
+
+    <div class="result-strip" id="t-strip" style="margin-bottom:1rem"></div>
+
+    <div class="converter-box">
+      <div class="section-lbl">Typography scale</div>
+      <table class="quick-table" id="t-table"></table>
+    </div>
+  </div>
+
+  <!-- RESOLUTION MODE -->
+  <div class="pane" id="pane-res">
+    <div class="converter-box">
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="field-wrap">
+          <span class="field-lbl">Width (px)</span>
+          <input class="field-input" id="r-w" type="number" value="1920" min="1" oninput="calcRes()">
+        </div>
+        <div class="field-wrap">
+          <span class="field-lbl">Height (px)</span>
+          <input class="field-input" id="r-h" type="number" value="1080" min="1" oninput="calcRes()">
+        </div>
+      </div>
+      <div class="field-wrap" style="margin-bottom:12px">
+        <span class="field-lbl">DPI</span>
+        <input class="field-input" id="r-dpi" type="number" value="96" min="1" oninput="calcRes()">
+      </div>
+      <div class="dpi-row">
+        <span class="dpi-label">Presets:</span>
+        <button class="dpi-chip" onclick="setRes(1280,720)">HD</button>
+        <button class="dpi-chip" onclick="setRes(1920,1080)">Full HD</button>
+        <button class="dpi-chip" onclick="setRes(2560,1440)">QHD</button>
+        <button class="dpi-chip" onclick="setRes(3840,2160)">4K</button>
+        <button class="dpi-chip" onclick="setRes(1080,1080)">Square</button>
+        <button class="dpi-chip" onclick="setRes(1200,628)">OG image</button>
+      </div>
+    </div>
+    <div id="res-out"></div>
+  </div>
+
+  <!-- ALL MODE -->
+  <div class="pane" id="pane-all">
+    <div class="converter-box">
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="field-wrap">
+          <span class="field-lbl">Pixels (px)</span>
+          <input class="field-input" id="a-px" type="number" value="100" min="0" oninput="calcAll()">
+        </div>
+        <div class="field-wrap">
+          <span class="field-lbl">DPI</span>
+          <input class="field-input" id="a-dpi" type="number" value="96" min="1" oninput="calcAll()">
+        </div>
+      </div>
+      <div class="field-wrap">
+        <span class="field-lbl">Base font size (px)</span>
+        <input class="field-input" id="a-base" type="number" value="16" min="1" oninput="calcAll()">
+      </div>
+    </div>
+    <div class="all-grid" id="all-grid"></div>
+  </div>
+</div>
+
+<script>
+let curDPI = 96;
+
+function g(id){return document.getElementById(id)}
+function gv(id){return parseFloat(g(id).value)||0}
+function sv(id,v){g(id).value=v}
+function f(n,d=4){return parseFloat(n.toFixed(d))}
+
+function setMode(m){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  event.target.closest('.mode-btn').classList.add('on');
+  g('pane-'+m).classList.add('on');
+}
+
+function setDPI(v){
+  curDPI=v;
+  g('dpi-custom').value=v;
+  document.querySelectorAll('.dpi-chip').forEach(c=>{
+    c.classList.toggle('on', c.textContent.startsWith(v+' ')||c.textContent===v+'');
+  });
+  fromPX();
+}
+
+function customDPI(){
+  curDPI=gv('dpi-custom')||96;
+  document.querySelectorAll('.dpi-chip').forEach(c=>c.classList.remove('on'));
+  fromPX();
+}
+
+function getUnitFactor(){
+  const u=g('unit-sel').value;
+  if(u==='in') return 1/curDPI;
+  if(u==='cm') return 2.54/curDPI;
+  if(u==='mm') return 25.4/curDPI;
+}
+
+function unitLabel(){return g('unit-sel').value}
+
+function fromPX(){
+  const px=gv('px-in'), factor=getUnitFactor();
+  sv('unit-out', f(px*factor));
+  renderLenStrip(px); renderLenTable(); renderLenNote();
+}
+
+function fromUnit(){
+  const u=gv('unit-out'), factor=getUnitFactor();
+  sv('px-in', f(u/factor));
+  renderLenStrip(gv('px-in')); renderLenTable(); renderLenNote();
+}
+
+function swapLen(){
+  const px=gv('px-in'), u=gv('unit-out');
+  sv('px-in', u); sv('unit-out', px); fromPX();
+}
+
+function renderLenStrip(px){
+  const dpi=curDPI;
+  const inch=px/dpi, cm=inch*2.54, mm=cm*10;
+  const ul=unitLabel();
+  g('len-strip').innerHTML=[
+    {l:'Inches',v:f(inch,4),u:'in',hero:ul==='in'},
+    {l:'Centimeters',v:f(cm,4),u:'cm',hero:ul==='cm'},
+    {l:'Millimeters',v:f(mm,3),u:'mm',hero:ul==='mm'},
+  ].map(x=>`<div class="result-card${x.hero?' hero':''}"><div class="rc-lbl">${x.l}</div><div class="rc-val">${x.v}</div><div class="rc-unit">${x.u}</div></div>`).join('');
+}
+
+function renderLenNote(){
+  const dpi=curDPI, ul=unitLabel();
+  let txt='';
+  if(ul==='in') txt=`At ${dpi} DPI: 1 inch = ${dpi}px`;
+  if(ul==='cm') txt=`At ${dpi} DPI: 1 cm = ${f(dpi/2.54,2)}px`;
+  if(ul==='mm') txt=`At ${dpi} DPI: 1 mm = ${f(dpi/25.4,2)}px`;
+  g('len-note').textContent=txt;
+}
+
+function renderLenTable(){
+  const dpi=curDPI, cur=gv('px-in');
+  const sizes=[8,16,32,64,96,128,256,512,1024];
+  let html='<tr><th>Pixels</th><th>Inches</th><th>cm</th><th>mm</th></tr>';
+  sizes.forEach(px=>{
+    const inch=px/dpi, cm=inch*2.54, mm=cm*10;
+    const hl=Math.abs(px-cur)<0.5?' class="hl"':'';
+    html+=`<tr${hl}><td>${px}px</td><td>${f(inch,4)}</td><td>${f(cm,4)}</td><td>${f(mm,3)}</td></tr>`;
+  });
+  g('len-table').innerHTML=html;
+}
+
+function setBase(v){
+  sv('t-base',v);
+  document.querySelectorAll('#pane-typo .dpi-chip').forEach(c=>{
+    c.classList.toggle('on',c.textContent===v+'px');
+  });
+  fromTPX();
+}
+
+function fromTPX(){
+  const px=gv('t-px'), base=gv('t-base')||16;
+  const em=px/base, pt=px*72/96;
+  g('t-strip').innerHTML=[
+    {l:'EM / REM',v:f(em,4),u:'em',hero:true},
+    {l:'Points',v:f(pt,2),u:'pt'},
+    {l:'Base',v:base,u:'px base'},
+  ].map(x=>`<div class="result-card${x.hero?' hero':''}"><div class="rc-lbl">${x.l}</div><div class="rc-val">${x.v}</div><div class="rc-unit">${x.u}</div></div>`).join('');
+  buildTTable(base);
+}
+
+function buildTTable(base){
+  const scale=[
+    {name:'Tiny / caption',em:.625},{name:'Small',em:.75},{name:'Body small',em:.875},
+    {name:'Body',em:1},{name:'Body large',em:1.125},{name:'Subheading',em:1.25},
+    {name:'Heading sm',em:1.5},{name:'Heading',em:1.75},{name:'Heading lg',em:2},
+    {name:'Display',em:2.5},{name:'Display lg',em:3},{name:'Hero',em:4}
+  ];
+  let html='<tr><th>Name</th><th>EM</th><th>px</th><th>pt</th></tr>';
+  const cur=gv('t-px');
+  scale.forEach(s=>{
+    const px=s.em*base, pt=px*72/96;
+    const hl=Math.abs(px-cur)<0.5?' class="hl"':'';
+    html+=`<tr${hl}><td>${s.name}</td><td>${s.em}em</td><td>${f(px,1)}</td><td>${f(pt,1)}</td></tr>`;
+  });
+  g('t-table').innerHTML=html;
+}
+
+function setRes(w,h){sv('r-w',w);sv('r-h',h);calcRes();}
+
+function calcRes(){
+  const w=gv('r-w'),h=gv('r-h'),dpi=gv('r-dpi')||96;
+  const wIn=w/dpi, hIn=h/dpi, wCm=wIn*2.54, hCm=hIn*2.54;
+  const mp=f(w*h/1000000,2);
+  function gcd(a,b){return b===0?a:gcd(b,a%b);}
+  const g2=gcd(w,h), ar=`${w/g2}:${h/g2}`;
+  g('res-out').innerHTML=`
+  <div class="res-grid">
+    ${[
+      {l:'Width',v:f(wIn,2),u:'inches / '+f(wCm,2)+' cm'},
+      {l:'Height',v:f(hIn,2),u:'inches / '+f(hCm,2)+' cm'},
+      {l:'Megapixels',v:mp,u:'MP'},
+      {l:'Aspect ratio',v:ar,u:'ratio'},
+    ].map(x=>`<div class="result-card"><div class="rc-lbl">${x.l}</div><div class="rc-val">${x.v}</div><div class="rc-unit">${x.u}</div></div>`).join('')}
+  </div>
+  <div class="converter-box" style="margin-top:1rem">
+    <div class="section-lbl">Full breakdown</div>
+    <table class="quick-table">
+      <tr><th>Unit</th><th>Width</th><th>Height</th></tr>
+      <tr><td>Inches</td><td>${f(wIn,4)}"</td><td>${f(hIn,4)}"</td></tr>
+      <tr><td>Centimeters</td><td>${f(wCm,4)} cm</td><td>${f(hCm,4)} cm</td></tr>
+      <tr><td>Millimeters</td><td>${f(wCm*10,3)} mm</td><td>${f(hCm*10,3)} mm</td></tr>
+      <tr><td>Points (72dpi)</td><td>${f(w*72/dpi,1)} pt</td><td>${f(h*72/dpi,1)} pt</td></tr>
+    </table>
+  </div>`;
+}
+
+function calcAll(){
+  const px=gv('a-px'), dpi=gv('a-dpi')||96, base=gv('a-base')||16;
+  const inch=px/dpi, cm=inch*2.54, mm=cm*10, pt=px*72/dpi, em=px/base, pc=pt/12;
+  g('all-grid').innerHTML=[
+    {l:'Inches',v:f(inch,6),u:'in'},
+    {l:'Centimeters',v:f(cm,6),u:'cm'},
+    {l:'Millimeters',v:f(mm,4),u:'mm'},
+    {l:'Points',v:f(pt,4),u:'pt'},
+    {l:'Picas',v:f(pc,4),u:'pc'},
+    {l:'EM / REM',v:f(em,4),u:'em'},
+  ].map(x=>`<div class="result-card"><div class="rc-lbl">${x.l}</div><div class="rc-val">${x.v}</div><div class="rc-unit">${x.u}</div></div>`).join('');
+}
+
+fromPX(); fromTPX(); calcRes(); calcAll();
+</script>
